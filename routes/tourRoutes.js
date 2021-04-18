@@ -5,6 +5,14 @@ const router = express.Router();
 
 // router.param('id', tourController.checkID);
 
+router.route('/tour-stats').get(tourController.getTourStats);
+
+router.route('/month-stats/:year').get(tourController.getMonthStats);
+
+router
+  .route('/top-5-cheap')
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+
 router
   .route('/')
   .get(tourController.getAllTours)
