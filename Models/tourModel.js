@@ -9,6 +9,10 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true
     },
+    secretTour: {
+      type: Boolean,
+      default: false
+    },
     slug: String,
     duration: {
       type: Number,
@@ -75,6 +79,25 @@ tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+//Query Middleware
+tourSchema.pre(/^find/, function(next) {
+  this.find({ secretTour: { $ne: true } });
+  this.time = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function(docs,next) {
+  console.log(`Time Taken by Query ${this.time - Date.now()}`);
+  next();
+});
+
+//aggreation middleware
+tourSchema.pre('aggregate',function(next){
+  this.pipeline().unshift({$match : {secretTour : {$ne : true}}});
+  console.log(this.pipeline());
+  next();
+})
 
 const Tour = mongoose.model('Tour', tourSchema);
 

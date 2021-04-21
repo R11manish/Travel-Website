@@ -178,7 +178,7 @@ exports.getMonthStats = async (req, res) => {
         }
       },
       {
-        $limit : 3
+        $limit : 6
       }
     ]);
 
