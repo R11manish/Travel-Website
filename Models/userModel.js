@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     ]
   },
 
-  Confirmpassword: {
+  confirmPassword: {
     type: String,
     required: [true, 'please enter your confirm password'],
     minLength: [6, 'This password is very short. please enter 6 character'],
