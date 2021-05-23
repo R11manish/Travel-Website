@@ -23,6 +23,11 @@ router
   .route('/:id')
   .get(tourController.getTour)
   .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
-
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin','lead-guide'),
+    tourController.deleteTour
+  );
+//very important use case of clousers in above route where we have restrictTo function. bascially promblem over here is how we gonna to pass 
+//parmater so in order this particular way for it and the way which we find is clousers
 module.exports = router;

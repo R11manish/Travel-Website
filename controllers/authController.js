@@ -3,7 +3,6 @@ const { promisify } = require('util');
 const User = require('./../Models/userModel');
 const catchAsync = require('../utility/catchAsync');
 const AppError = require('../utility/appError');
-const { Decipher } = require('crypto');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -16,6 +15,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
+    role: req.body.role,
     confirmPassword: req.body.confirmPassword,
     passwordChangedAt: req.body.passwordChangedAt
   });
@@ -92,3 +92,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles ['admin','lead-guide'], role = 'user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('you do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
+};
