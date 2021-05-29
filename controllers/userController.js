@@ -46,7 +46,6 @@ exports.deleteUser = (req, res) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log('hello world');
   if (req.body.password || req.body.confirmPassword) {
     return next(
       new AppError(
@@ -71,5 +70,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     data: {
       user: updateUser
     }
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  deleteUser = await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    data: null
   });
 });
