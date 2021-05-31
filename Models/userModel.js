@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'please fill the name '],
-    maxLength: [10, 'maximum name value for the tour should be 40'],
-    minLength: [4, 'minimum name value for the tour should be atleast 10']
+    maxLength: [10, 'maximum leter allowed 15, please retry'],
+    minLength: [4, 'minimum letters allowed 3, please retry']
   },
 
   email: {
