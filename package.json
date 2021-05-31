@@ -14,6 +14,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
+    "express-mongo-sanitize": "^2.1.0",
     "express-rate-limit": "^5.2.6",
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
@@ -22,7 +23,8 @@
     "ndb": "^1.1.5",
     "nodemailer": "^6.6.1",
     "slugify": "^1.5.0",
-    "validator": "^13.6.0"
+    "validator": "^13.6.0",
+    "xss-clean": "^0.1.1"
   },
   "devDependencies": {
     "eslint": "^5.16.0",

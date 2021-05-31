@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const app = express();
 
@@ -14,7 +16,6 @@ const app = express();
 app.use(helmet());
 
 // development logging
-app.use();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
@@ -31,6 +32,11 @@ app.use('/api', limiter);
 //body parser , reading data from body into  req.body
 app.use(express.json({ limit: '10kb' }));
 
+//Data sanitization against NoSql query injection
+app.use(mongoSanitize());
+
+//Data sanitization against xss
+app.use(xss());
 //serving static files
 app.use(express.static(`${__dirname}/public`));
 
