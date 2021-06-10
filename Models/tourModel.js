@@ -11,10 +11,10 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxLength: [40, 'maximum name value for the tour should be 40'],
       minLength: [10, 'minimum name value for the tour should be atleast 10'],
-      validate: [
-        validator.isAlpha,
-        'The tour name must only contains characters'
-      ]
+      // validate: [
+      //   validator.isAlpha,
+      //   'The tour name must only contains characters'
+      // ]
     },
     secretTour: {
       type: Boolean,
@@ -85,7 +85,29 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false
     },
-    startDates: [Date]
+    startDates: [Date],
+    startLocation: {
+      //GeoJSOn
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
+      },
+      coordinates: [Number],
+      address :  String,
+      description : String
+    },
+    locations : [{
+      type : {
+        type : String,
+        default : 'Point',
+        enum : ['Point']
+      },
+      coordinates : [Number],
+      address : String,
+      description : String,
+      day : Number
+    }]
   },
   {
     toJSON: { virtuals: true },
