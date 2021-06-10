@@ -147,6 +147,16 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
+tourSchema.pre(/^find/ , function(next){
+  this.populate({
+    path : 'guides',
+    select : '-__v -passwordChangedAt'
+  });
+  next();
+})
+
+
+
 tourSchema.post(/^find/, function(docs, next) {
   console.log(`Time Taken by Query ${this.time - Date.now()}`);
   next();
