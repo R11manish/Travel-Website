@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
+const reviewController = require('./../controllers/reviewController');
 
 const router = express.Router();
 
@@ -30,4 +31,16 @@ router
   );
 //very important use case of clousers in above route where we have restrictTo function. bascially promblem over here is how we gonna to pass 
 //parmater so in order this particular way for it and the way which we find is clousers
+
+// just for reference
+// POST /tour/324gd3ds/reviews
+// GET /tour/332fsf343/reviews
+// GET /tour/3432DF334/reviews/343dfs343
+router.route('/:tourId/reviews')
+.post(
+  authController.protect,
+  authController.restrictTo('user'),
+  reviewController.createReview
+);
+
 module.exports = router;
