@@ -4,6 +4,8 @@ const AppError = require('../utility/appError');
 
 //display all the reviews
 exports.getAllReview = catchAsync( async (req,res,next) =>{
+  let filter = {}
+  if(req.params.tourId) filter = {tour : req.params.tourId }
     const reviews =  await Review.find();
     res.status(200).json({
         status: 'success',
