@@ -153,7 +153,7 @@ tourSchema.pre(/^find/ , function(next){
     select : '-__v -passwordChangedAt'
   });
   next();
-})
+});
 
 
 

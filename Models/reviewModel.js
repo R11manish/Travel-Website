@@ -17,8 +17,8 @@ const reviewSchema = new mongoose.Schema({
 
     createdAt : {
         type : Date ,
-        default : Date.now()
-    }
+        default : Date.now
+    },
     
     tour : [
         {type : mongoose.Schema.ObjectId,
@@ -38,6 +38,15 @@ const reviewSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-const Review = mongoose.model('reviewSchema', tourSchema);
+//Query Midddleware
+// tourSchema.pre(/^find/ , function(next){
+//     this.populate({
+//       path : 'tour',
+//       select : '-__v '
+//     });
+//     next();
+//   });
+
+const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
