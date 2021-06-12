@@ -7,12 +7,13 @@ const router = express.Router();
 
 // just for reference
 // POST /tour/324gd3ds/reviews
-router.use('/:tourId/reviews',reviewRoute);
+router.use('/:tourId/reviews', reviewRoute);
 // router.param('id', tourController.checkID);
 
 router.route('/tour-stats').get(tourController.getTourStats);
 
-router.route('/month-stats/:year').get(tourController.getMonthStats);
+router.route('/month-stats/:year').get(authController.protect,
+  authController.restrictTo('admin', 'lead-guide'), tourController.getMonthStats);
 
 router
   .route('/top-5-cheap')
@@ -20,16 +21,18 @@ router
 
 router
   .route('/')
-  .get(authController.protect, tourController.getAllTours)
-  .post(tourController.createTour);
+  .get(tourController.getAllTours)
+  .post(authController.protect,
+    authController.restrictTo('admin', 'lead-guide'), tourController.createTour);
 
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(authController.protect,
+    authController.restrictTo('admin', 'lead-guide'), tourController.updateTour)
   .delete(
     authController.protect,
-    authController.restrictTo('admin','lead-guide'),
+    authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour
   );
 //very important use case of clousers in above route where we have restrictTo function. bascially promblem over here is how we gonna to pass 
