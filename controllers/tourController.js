@@ -1,8 +1,7 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 const Tour = require('../Models/tourModel');
-const APIFeatures = require('../utility/features');
 const catchAsync = require('../utility/catchAsync');
-const AppError = require('../utility/appError');
+// const AppError = require('../utility/appError');
 const factory = require('./handlerFactory');
 
 exports.aliasTopTours = (req, res, next) => {
@@ -11,43 +10,6 @@ exports.aliasTopTours = (req, res, next) => {
   req.query.field = 'name,price,ratingAverage,summary,difficulty';
   next();
 };
-
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Tour, req.query)
-    .filter()
-    .sort()
-    .field()
-    .pagination();
-  //execute query
-  const tours = await features.query;
-
-  res.status(200).json({
-    status: 'Success',
-    results: tours.length,
-    data: { tours }
-  });
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-  const tours = await Tour.findById(req.params.id).populate('reviews');
-
-  if (!tours) {
-    return next(new AppError('There is no such tour exist with this ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tours
-    }
-  });
-});
-
-exports.createTour = factory.createOne(Tour);
-
-exports.updateTour = factory.updateOne(Tour);
-
-exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
@@ -121,3 +83,14 @@ exports.getMonthStats = catchAsync(async (req, res, next) => {
     data: stats
   });
 });
+
+
+exports.getAllTours = factory.getAll(Tour);
+
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+
+exports.createTour = factory.createOne(Tour);
+
+exports.updateTour = factory.updateOne(Tour);
+
+exports.deleteTour = factory.deleteOne(Tour);
