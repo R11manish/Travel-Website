@@ -41,6 +41,8 @@ const reviewSchema = new mongoose.Schema({
         toObject: { virtuals: true }
     });
 
+reviewSchema.index({ user: 1, tour: 1 }, { unique: true });
+
 //Query Midddleware
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
