@@ -39,4 +39,10 @@ router
 //parmater so in order this particular way for it and the way which we find is clousers
 
 
+// /tours-within/:distance/center/:latlng/unit/:unit
+// /tours-within/233/center/-40,45/unit/mil
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+
 module.exports = router;
