@@ -1,51 +1,81 @@
 //review / rating / createdAt / ref to Tour /ref to User
 
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 
 const reviewSchema = new mongoose.Schema({
-    review : {
+    review: {
         type: String,
-        required : [true , 'Review cannot be empty']
-    },
-    
-    rating : {
-        type : Number ,
-        min : 1,
-        max : 5
+        required: [true, 'Review cannot be empty']
     },
 
-    createdAt : {
-        type : Date ,
-        default : Date.now
+    rating: {
+        type: Number,
+        min: 1,
+        max: 5
     },
-    
-    tour : [
-        {type : mongoose.Schema.ObjectId,
-         ref : 'Tour',
-         required : [true , 'Review must belong to a tour']
+
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+
+    tour: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Tour',
+            required: [true, 'Review must belong to a tour']
         }
     ],
-    user : [
-        {type : mongoose.Schema.ObjectId,
-         ref : 'User',
-         required : [true , 'Review must belong to a User']
+    user: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: [true, 'Review must belong to a User']
         }
-    ]    
+    ]
 },
-{
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-});
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    });
 
 //Query Midddleware
-reviewSchema.pre(/^find/ , function(next){
+reviewSchema.pre(/^find/, function (next) {
     this.populate({
-        path : 'user',
-        select : 'name'
-      });
+        path: 'user',
+        select: 'name'
+    });
     next();
-  });
+});
+
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+    const stats = await this.aggregate([
+        {
+            $match: { tour: tourId }
+        },
+        {
+            $group: {
+                _id: '$tour',
+                nRating: { $sum: 1 },
+                avgRating: { $avg: '$rating' } 
+            }
+        }
+    ]);
+    console.log(stats);
+    await Tour.findByIdAndUpdate(tourId, {
+        ratingsQuantity: stats[0].nRating,
+        ratingsAverage: stats[0].avgRating
+    });
+};
+
+
+reviewSchema.post('save', function () {
+    // post middleware does not get access to next
+    // this point to currenct review
+    this.constructor.calcAverageRatings(this.tour);
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
