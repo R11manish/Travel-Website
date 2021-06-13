@@ -74,6 +74,7 @@ exports.getAll = Model => catchAsync(async (req, res, next) => {
         .field()
         .pagination();
     //execute query
+    // const doc = await features.query.explain();
     const doc = await features.query;
 
     res.status(200).json({

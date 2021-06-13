@@ -39,12 +39,12 @@ const tourSchema = new mongoose.Schema(
           'a tour must have only either of these value - easy | medium | diffcult '
       }
     },
-    ratingAverage: {
+    ratingsAverage: {
       type: Number,
       min: [1, 'The minimum value must value above 1.0'],
       max: [5, 'The maximum  value must value below 5.0']
     },
-    ratingQuantity: {
+    ratingsQuantity: {
       type: Number,
       default: 0
     },
@@ -60,7 +60,7 @@ const tourSchema = new mongoose.Schema(
       //this validation is not going to work for updateRoute
       type: Number,
       validate: {
-        validator: function(val) {
+        validator: function (val) {
           return val < this.price;
         },
         message:
@@ -95,23 +95,24 @@ const tourSchema = new mongoose.Schema(
         enum: ['Point']
       },
       coordinates: [Number],
-      address :  String,
-      description : String
+      address: String,
+      description: String
     },
-    locations : [{
-      type : {
-        type : String,
-        default : 'Point',
-        enum : ['Point']
+    locations: [{
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point']
       },
-      coordinates : [Number],
-      address : String,
-      description : String,
-      day : Number
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number
     }],
-    guides : [
-      {type : mongoose.Schema.ObjectId,
-       ref : 'User'
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
       }
     ]
   },
@@ -121,19 +122,22 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-tourSchema.virtual('duration-week').get(function() {
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
+tourSchema.virtual('duration-week').get(function () {
   return this.duration / 7;
 });
 
 //this is virtual populate
 tourSchema.virtual('reviews', {
-  ref : 'Review',
-  foreignField : 'tour',
-  localField : '_id'
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id'
 });
 
 //document middleware - .save() , .create()
-tourSchema.pre('save', function(next) {
+tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
@@ -148,29 +152,29 @@ tourSchema.pre('save', function(next) {
 
 
 //Query Middleware
-tourSchema.pre(/^find/, function(next) {
+tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   this.time = Date.now();
   next();
 });
 
-tourSchema.pre(/^find/ , function(next){
+tourSchema.pre(/^find/, function (next) {
   this.populate({
-    path : 'guides',
-    select : '-__v -passwordChangedAt'
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
   });
   next();
 });
 
 
 
-tourSchema.post(/^find/, function(docs, next) {
+tourSchema.post(/^find/, function (docs, next) {
   console.log(`Time Taken by Query ${this.time - Date.now()}`);
   next();
 });
 
 //aggreation middleware
-tourSchema.pre('aggregate', function(next) {
+tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
