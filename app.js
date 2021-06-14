@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 const AppError = require('./utility/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const rateLimit = require('express-rate-limit');
@@ -13,7 +14,12 @@ const hpp = require('hpp');
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'))
+
 // 1)GLOBAL  MIDDLEWARES
+//serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 // set security Http method
 app.use(helmet());
 
@@ -53,8 +59,7 @@ app.use(
     ]
   })
 );
-//serving static files
-app.use(express.static(`${__dirname}/public`));
+
 
 //test middleware
 app.use((req, res, next) => {
@@ -63,11 +68,14 @@ app.use((req, res, next) => {
   next();
 });
 // 3) ROUTES
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+})
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
-//error handling route
+//error handling   route
 app.all('*', (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));
 });
