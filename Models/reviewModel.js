@@ -21,33 +21,36 @@ const reviewSchema = new mongoose.Schema({
         default: Date.now
     },
 
-    tour: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'Tour',
-            required: [true, 'Review must belong to a tour']
-        }
-    ],
-    user: [
-        {
-            type: mongoose.Schema.ObjectId,
-            ref: 'User',
-            required: [true, 'Review must belong to a User']
-        }
-    ]
+    tour:
+    {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Tour',
+        required: [true, 'Review must belong to a tour']
+    }
+    ,
+    user:
+    {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: [true, 'Review must belong to a User']
+    }
+
 },
     {
         toJSON: { virtuals: true },
         toObject: { virtuals: true }
-    });
+    }
+
+);
 
 reviewSchema.index({ user: 1, tour: 1 }, { unique: true });
+
 
 //Query Midddleware
 reviewSchema.pre(/^find/, function (next) {
     this.populate({
         path: 'user',
-        select: 'name'
+        select: 'name photo'
     });
     next();
 });
@@ -65,7 +68,7 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
             }
         }
     ]);
-    console.log(stats);
+
     if (stats.length > 0) {
         await Tour.findByIdAndUpdate(tourId, {
             ratingsQuantity: stats[0].nRating,
