@@ -12,6 +12,7 @@ const viewRouter = require('./routes/viewRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const { contentSecurityPolicy } = require('helmet');
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.set('views', path.join(__dirname, 'views'))
 //serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 // set security Http method
-app.use(helmet());
+app.use(helmet({contentSecurityPolicy : false})); // allows script from other sites
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
