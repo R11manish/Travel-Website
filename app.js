@@ -10,9 +10,10 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoute');
 const viewRouter = require('./routes/viewRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
+const cors = require('cors');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const { contentSecurityPolicy } = require('helmet');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -23,7 +24,22 @@ app.set('views', path.join(__dirname, 'views'))
 //serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 // set security Http method
-app.use(helmet({contentSecurityPolicy : false})); // allows script from other sites
+app.use(helmet({ contentSecurityPolicy: false })); // allows script from other sites
+
+// 1) GLOBAL MIDDLEWARES
+// Implement CORS
+app.use(cors());
+// Access-Control-Allow-Origin
+// api.natours.com, front-end natours.com
+// app.use(
+//   cors({
+//     origin: 'https://www.natours.com',
+//   })
+// );
+
+app.options('*', cors());
+// app.options('/api/v1/tours/:id', cors());
+
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
@@ -41,6 +57,7 @@ app.use('/api', limiter);
 
 //body parser , reading data from body into  req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //Data sanitization against NoSql query injection
 app.use(mongoSanitize());
@@ -66,7 +83,7 @@ app.use(
 //test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log(req.headers)
+  console.log(req.cookies)
   next();
 });
 // 3) ROUTES
