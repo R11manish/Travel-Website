@@ -20,12 +20,6 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'))
 
-// 1)GLOBAL  MIDDLEWARES
-//serving static files
-app.use(express.static(path.join(__dirname, 'public')));
-// set security Http method
-app.use(helmet({ contentSecurityPolicy: false })); // allows script from other sites
-
 // 1) GLOBAL MIDDLEWARES
 // Implement CORS
 app.use(cors());
@@ -40,6 +34,15 @@ app.use(cors());
 app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
 
+// 1)GLOBAL  MIDDLEWARES
+//serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+// set security Http method
+app.use(helmet({ contentSecurityPolicy: false })); // allows script from other sites
+
+
+
+
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
@@ -47,7 +50,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 //limit request from same ip
-limiter = rateLimit({
+const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000,
   message: 'To many request from this ip. please try again in an hour'
