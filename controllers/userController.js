@@ -3,18 +3,21 @@ const catchAsync = require('../utility/catchAsync');
 const AppError = require('../utility/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
+const sharp = require('sharp');
 
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users')
-  },
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users')
+//   },
 
-  filename: (req, file, cb) => {
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  }
-});
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   }
+// });
+
+const multerStorage = multer.memoryStorage();
 
 
 const multerFilter = (req, file, cb) => {
@@ -23,7 +26,7 @@ const multerFilter = (req, file, cb) => {
   } else {
     cb(new AppError('Not an image! please upload only images .', 400), false);
   }
-}
+};
 
 const upload = multer({
   storage: multerStorage,
@@ -32,6 +35,18 @@ const upload = multer({
 
 
 exports.uploadUserPhoto = upload.single('photo');
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+  next();
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -59,6 +74,7 @@ exports.getMe = (req, res, next) => {
 exports.updateMe = catchAsync(async (req, res, next) => {
   console.log(req.file);
   console.log(req.body);
+  console.log(req.file.filename);
 
 
   if (req.body.password || req.body.confirmPassword) {
@@ -72,6 +88,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   //filter the data which is coming from user
   const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
 
   //update the document of user
 
