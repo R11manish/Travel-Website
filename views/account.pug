@@ -30,9 +30,10 @@ block content
             .user-view__content
                 .user-view__form-container
                     h2.heading-secondary.ma-bt-md Your account settings
-                    //- by traditional way
+                    //- by traditional way without api
                     //- form.form.form-user-data(action='/submit-user-data' , method = 'POST')
-
+                    //- for to submit files  without api we have do this
+                    //- form.form.form-user-data(action='/submit-user-data' method='POST' enctype='multipart/form-data')
                     form.form.form-user-data
                         .form__group
                             label.form__label(for='name') Name
@@ -41,8 +42,9 @@ block content
                             label.form__label(for='email') Email address
                             input#email.form__input(type='email', value=`${user.email}`,name = 'email' , required)
                         .form__group.form__photo-upload
-                            img.form__user-photo(src=`img/users/${user.photo}`, alt='User photo')
-                            a.btn-text(href='') Choose new photo
+                            img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
+                            input.form__upload(type='file', accept = 'image/*' , id='photo' , name='photo')
+                            label(for='photo') choose new photo
                         .form__group.right
                             button.btn.btn--small.btn--green Save settings
                 .line &nbsp;

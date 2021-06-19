@@ -13,7 +13,7 @@ const updatePassword = document.querySelector('.form-user-settings');
 
 
 //values
-
+//.form-user-data
 
 //DELEGATION
 if (mapBox) {
@@ -34,13 +34,15 @@ if (logOutBtn) logOutBtn.addEventListener('click', logout);
 if (updateForm)
     updateForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        updateSettings({ name, email }, 'data');
+        const form = new FormData();
+        form.append('name', document.getElementById('name').value)
+        form.append('email', document.getElementById('email').value)
+        form.append('photo', document.getElementById('photo').files[0]);
+        updateSettings(form, 'data');
     })
 
 if (updatePassword)
-    updatePassword.addEventListener('submit',async e => {
+    updatePassword.addEventListener('submit', async e => {
         e.preventDefault();
         document.querySelector('.btn--save-password').textContent = 'updating...'
 
@@ -51,8 +53,8 @@ if (updatePassword)
 
         await updateSettings({ currentPassword, password, confirmPassword }, 'password');
 
-        document.getElementById('password-current').value='';
-        document.getElementById('password').value='';
-        document.getElementById('password-confirm').value='';
+        document.getElementById('password-current').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('password-confirm').value = '';
         document.querySelector('.btn--save-password').textContent = 'save password'
     })
