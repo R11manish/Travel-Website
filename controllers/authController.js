@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const User = require('./../Models/userModel');
 const catchAsync = require('../utility/catchAsync');
 const AppError = require('../utility/appError');
-const sendEmail = require('./../utility/email');
+const Email = require('./../utility/email');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -49,6 +49,9 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt
   });
 
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  console.log(url);
+  await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
 });
 
@@ -160,11 +163,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forgot your password ? enter your new password to this URL: ${resetURL}. we will proceed it.\n ignore this message if you didn't forget your password, please ignore this email`;
 
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'your password  resend token is valid for (upto 10 min)',
-      message
-    });
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: 'your password  resend token is valid for (upto 10 min)',
+    //   message
+    // });
 
     res.status(200).json({
       status: 'success',
