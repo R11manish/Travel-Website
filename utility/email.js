@@ -13,7 +13,14 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV == 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        host: process.env.PROD_EMAIL_HOST,
+        port: process.env.PROD_EMAIL_PORT, // no need to set host or port etc.
+        auth: {
+          user: process.env.PROD_EMAIL_USER,
+          pass: process.env.PROD_EMAIL_PASS
+        }
+      })
     }
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -35,7 +42,7 @@ module.exports = class Email {
         url: this.url,
         subject
       }
-    )
+    );
 
     // define email option
 
@@ -44,7 +51,7 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmlToText.htmlToText()
+      text: htmlToText.htmlToText(html)
     }
 
     //3 create a transport and send email
@@ -53,6 +60,10 @@ module.exports = class Email {
 
   async sendWelcome() {
     await this.send('welcome', 'welcome to natours family!!')
+  }
+
+  async sendPasswordReset() {
+    await this.send('passwordReset', 'Your password reset token (valid for only 10 minutes)')
   }
 
 }
