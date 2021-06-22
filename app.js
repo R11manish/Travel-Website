@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoute');
+const bookingRouter = require('./routes/bookingRoute')
 const viewRouter = require('./routes/viewRoutes');
 const mongoSanitize = require('express-mongo-sanitize');
 const cors = require('cors');
@@ -95,6 +96,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter)
 
 
 //error handling   route
