@@ -1,6 +1,8 @@
 # Travel-Website
 ## Technologies used in this are: Node js,express,mongodb, pug 
 
+![project overlook](tour.png)
+
 ### live version available at  	[Click Here](https://manishapps.herokuapp.com/)
 
 
